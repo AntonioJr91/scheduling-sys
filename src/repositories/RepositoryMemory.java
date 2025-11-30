@@ -1,5 +1,6 @@
 package repositories;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,11 +20,10 @@ public class RepositoryMemory<T> implements Repository<T> {
     return storage.stream()
         .filter(e -> {
           try {
-            return (int) e.getClass()
-                .getMethod("getId")
-                .invoke(e) == id;
+            return hasSameIdAs(id, e);
           } catch (Exception ex) {
-            throw new RuntimeException("Entity must have getId() method");
+            identityNotAccessible();
+            return false;
           }
         })
         .findFirst()
@@ -34,13 +34,10 @@ public class RepositoryMemory<T> implements Repository<T> {
   public T save(T entity) {
     storage.removeIf(e -> {
       try {
-        return (int) e.getClass()
-            .getMethod("getId")
-            .invoke(e) == (int) entity.getClass()
-                .getMethod("getId")
-                .invoke(entity);
+        return hasSameIdentityAs(entity, e);
       } catch (Exception ex) {
-        throw new RuntimeException("Entity must have getId() method");
+        identityNotAccessible();
+        return false;
       }
     });
 
@@ -52,13 +49,31 @@ public class RepositoryMemory<T> implements Repository<T> {
   public void delete(int id) {
     storage.removeIf(e -> {
       try {
-        return (int) e.getClass()
-            .getMethod("getId")
-            .invoke(e) == id;
+        return hasSameIdAs(id, e);
       } catch (Exception ex) {
-        throw new RuntimeException("Entity must have getId() method");
+        identityNotAccessible();
+        return false;
       }
     });
   }
 
+  private boolean hasSameIdAs(int id, T e)
+      throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    return (int) e.getClass()
+        .getMethod("getId")
+        .invoke(e) == id;
+  }
+
+  private boolean hasSameIdentityAs(T entity, T e)
+      throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    return (int) e.getClass()
+        .getMethod("getId")
+        .invoke(e) == (int) entity.getClass()
+            .getMethod("getId")
+            .invoke(entity);
+  }
+
+  private RuntimeException identityNotAccessible() {
+    return new RuntimeException("Entity must have getId() method");
+  }
 }

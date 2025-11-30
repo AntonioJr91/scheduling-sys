@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import model.Patient;
 import repositories.PatientRepository;
 
-class PatientRepositoryTest {
+class RepositoryMemoryTest {
 
   private PatientRepository repo;
   private Patient p1;
