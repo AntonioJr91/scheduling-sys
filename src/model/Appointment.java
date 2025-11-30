@@ -3,11 +3,12 @@ package model;
 import java.time.LocalDateTime;
 
 import enums.AppointmentStatus;
+import interfaces.HasId;
 import model.exception.DomainException;
 
-public class Appointment {
+public class Appointment implements HasId {
   private static int count = 0;
-  private int id;
+  private Integer id;
   private final Patient patient;
   private final Doctor doctor;
   private String reason;
@@ -29,7 +30,7 @@ public class Appointment {
     this.consultationFee = consultationFee;
   }
 
-  public int getId() {
+  public Integer getId() {
     return id;
   }
 
@@ -113,5 +114,4 @@ public class Appointment {
     return true;
   }
 
-  
 }
