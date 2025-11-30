@@ -2,9 +2,10 @@ package model;
 
 import java.time.LocalDate;
 
+import interfaces.HasEmail;
 import model.exception.DomainException;
 
-public abstract class Person {
+public abstract class Person implements HasEmail{
 
   private static int count = 0;
 
