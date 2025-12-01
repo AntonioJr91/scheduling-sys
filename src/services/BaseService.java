@@ -2,11 +2,9 @@ package services;
 
 import java.util.List;
 
-import interfaces.HasEmail;
-import model.exception.EntityAlreadyExistsException;
 import model.exception.EntityNotFoundException;
 
-public abstract class BaseService<T extends HasEmail> {
+public abstract class BaseService<T> {
   protected final Class<T> entityClass;
 
   public BaseService(Class<T> entityClass) {
@@ -43,7 +41,6 @@ public abstract class BaseService<T extends HasEmail> {
       throw new IllegalArgumentException(String.format("%s cannot be null.", entityClass.getSimpleName()));
     }
 
-    validateEmail(entity);
     saveToRepository(entity);
   }
 
@@ -54,13 +51,5 @@ public abstract class BaseService<T extends HasEmail> {
 
     findById(id);
     deleteFromRepository(id);
-  }
-
-  protected void validateEmail(T entity) {
-    for (var exists : getFromRepositoryAll()) {
-      if (exists.getEmail().equalsIgnoreCase(entity.getEmail())) {
-        throw new EntityAlreadyExistsException("Email already registered.");
-      }
-    }
   }
 }
