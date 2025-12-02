@@ -27,6 +27,12 @@ public class AppointmentController {
     this.doctorService = doctorService;
   }
 
+  public void getALl() {
+    for (Appointment ap : appointmentService.getAll()) {
+      System.out.println(ap);
+    }
+  }
+
   public void add() {
     while (true) {
       System.out.println("---- New Appointment -----");
@@ -57,12 +63,6 @@ public class AppointmentController {
       } catch (Exception ex) {
         System.out.println(ex.getMessage());
       }
-    }
-  }
-
-  public void showAll(){
-    for(Appointment ap : appointmentService.getAll()){
-      System.out.println(ap);
     }
   }
 
