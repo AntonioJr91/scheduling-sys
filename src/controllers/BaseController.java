@@ -1,5 +1,8 @@
 package controllers;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -9,6 +12,7 @@ import interfaces.HasName;
 import interfaces.IsUpdatable;
 import services.BaseService;
 import utils.Input;
+import utils.PauseUI;
 
 public abstract class BaseController<T extends HasId & HasName & HasEmail & IsUpdatable> {
   protected Scanner sc = Input.sc;
@@ -129,9 +133,23 @@ public abstract class BaseController<T extends HasId & HasName & HasEmail & IsUp
     pause();
   }
 
+  protected LocalDate readBirthday() {
+    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    while (true) {
+      System.out.print("Birthday (dd/MM/yyyy): ");
+      String birthday = sc.nextLine();
+
+      try {
+        return LocalDate.parse(birthday, fmt);
+      } catch (DateTimeParseException e) {
+        System.out.println("Invalid format. Use dd/MM/yyyy.");
+      }
+    }
+  }
+
   protected void pause() {
-    System.out.print("Press any key to continue...");
-    sc.nextLine();
+    PauseUI.pause();
   }
 
 }
