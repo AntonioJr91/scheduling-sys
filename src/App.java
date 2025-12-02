@@ -1,8 +1,13 @@
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
+import UI.MainMenu;
+import controllers.AppointmentController;
+import controllers.DoctorController;
+import controllers.PatientController;
 import enums.Specialty;
-import model.Appointment;
 import model.Doctor;
 import model.Patient;
 import repositories.AppointmentRepository;
@@ -14,53 +19,38 @@ import services.PatientService;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        System.out.println("Hello, World!");
+        Locale.setDefault(Locale.US);
 
-        PatientRepository pr = new PatientRepository();
-        DoctorRepository dr = new DoctorRepository();
-        AppointmentRepository ar = new AppointmentRepository();
+        PatientRepository patientRepository = new PatientRepository();
+        PatientService patientService = new PatientService(patientRepository);
+        PatientController patientController = new PatientController(patientService);
+        Patient p1 = new Patient("john", "john@example.com", LocalDate.of(1995, 2, 2));
+        Patient p2 = new Patient("john2", "john2@example.com", LocalDate.of(1995, 2, 2));
+        patientService.save(p1);
+        patientService.save(p2);
 
-        PatientService ps = new PatientService(pr);
-        DoctorService ds = new DoctorService(dr);
-        AppointmentService as = new AppointmentService(ar);
+        DoctorRepository doctorRepository = new DoctorRepository();
+        DoctorService doctorService = new DoctorService(doctorRepository);
+        DoctorController doctorController = new DoctorController(doctorService);
+        Doctor d1 = new Doctor("house", "house@example.com", LocalDate.of(1900, 1, 1), Specialty.GENERAL_PRACTITIONER);
+        doctorService.save(d1);
 
-        Patient p1 = new Patient("John", "john@example.com", LocalDate.of(2020, 5, 5));
-        Patient p2 = new Patient("Joe", "ajohn@example.com", LocalDate.of(2020, 5, 5));
+        AppointmentRepository appointmentRepository = new AppointmentRepository();
+        AppointmentService appointmentService = new AppointmentService(appointmentRepository);
+        AppointmentController appointmentController = new AppointmentController(appointmentService, patientService,
+                doctorService);
 
-        Doctor d1 = new Doctor("house", "house@example.com", LocalDate.of(2000, 1, 1), Specialty.GENERAL_PRACTITIONER);
-        Doctor d2 = new Doctor("house2", "house2@example.com", LocalDate.of(2000, 1, 1), Specialty.CARDIOLOGIST);
+        List<String> options = Arrays.asList(
+                "All Patients", "Find Patient By Name", "Add New Patient", "Update Patient", "Delete Patient"
+            );
 
-        Appointment a1 = new Appointment(p2, d1, null,
-                LocalDateTime.of(2025, 1, 1, 10, 30),
-                LocalDateTime.of(2025, 1, 1, 11, 30),
-                100.00);
+        List<Runnable> actions = Arrays.asList(
+                () -> patientController.getAll(),
+                () -> patientController.getByName(),
+                () -> patientController.add(),
+                () -> patientController.update(),
+                () -> patientController.delete());
 
-        Appointment a2 = new Appointment(p1, d2, null,
-                LocalDateTime.of(2025, 1, 1, 11, 00),
-                LocalDateTime.of(2025, 1, 1, 11, 30),
-                919.99);
-
-        ps.save(p1);
-        ps.save(p2);
-
-        // System.out.println(ps.getAll());
-        // System.out.println(ps.findById(p2.getId()));
-
-        // ps.delete(p2.getId());
-
-        // System.out.println(ps.getAll());
-
-        ds.save(d1);
-
-        // System.out.println(ds.getAll());
-        // System.out.println(ds.findById(d1.getId()));
-
-        as.save(a1);
-        as.save(a2);
-
-        // System.out.println(as.getAll());
-
-        System.out.println(as.findById(a2.getId()));
-
+        MainMenu.menu("Scheduling System", options, actions);
     }
 }
