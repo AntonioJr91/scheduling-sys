@@ -22,91 +22,95 @@ public class PatientController {
   public void getAll() {
     List<Patient> patients = patientService.getAll();
 
-    System.out.println("Patients");
+    System.out.println("----- Patient List -----");
 
     if (patients.isEmpty()) {
-      System.out.println("Vazio");
+      System.out.println("Empty list");
+      pause();
+      return;
     }
-    System.out.println(patients);
+
+    patients.forEach(System.out::println);
+    pause();
+    return;
   }
 
   public void getByName() {
-    System.out.println("patitent");
+    System.out.println("----- Patient List By Name -----");
 
-    System.out.println("Name: ");
+    System.out.print("Name: ");
     String name = sc.nextLine();
 
     List<Patient> patients = patientService.getAll().stream().filter(p -> p.getName().equalsIgnoreCase(name)).toList();
 
-    System.out.println(patients);
+    if (patients.isEmpty()) {
+      System.out.println("Empty list");
+      pause();
+      return;
+    }
+
+    patients.forEach(System.out::println);
+    pause();
+    return;
   }
 
   public void add() {
-    while (true) {
-      System.out.println("--- New Patient ----");
+    System.out.println("----- New Patient ------");
 
-      System.out.print("Name: ");
-      String name = sc.nextLine();
+    System.out.print("Name: ");
+    String name = sc.nextLine();
 
-      System.out.print("Email: ");
-      String email = sc.nextLine();
+    System.out.print("Email: ");
+    String email = sc.nextLine();
 
-      LocalDate birthday = readBirthday();
+    LocalDate birthday = readBirthday();
 
-      try {
-        Patient patient = new Patient(name, email, birthday);
-        patientService.save(patient);
-        System.out.println("Patient successfully created.");
-        return;
-      } catch (Exception ex) {
-        System.out.println(ex.getMessage());
-      }
+    try {
+      Patient patient = new Patient(name, email, birthday);
+      patientService.save(patient);
+      System.out.println("Patient successfully created.");
+    } catch (Exception ex) {
+      System.out.println(ex.getMessage());
     }
+    pause();
   }
 
   public void update() {
-    System.out.println("Update");
-
-    System.out.print("Informe o ID:");
-    int id = sc.nextInt();
-    sc.nextLine();
-
-    Patient patient = patientService.findById(id);
-    if (patient == null)
-      throw new RuntimeException("id invalido");
-
-    System.out.println("dados do  elemento para confirmação");
-
-    System.out.println("Novo email: ");
-    String email = "email";
-
-    List<Patient> lista = patientService.getAll();
-    boolean isValid = lista.stream().anyMatch(d -> d.getEmail().equalsIgnoreCase(email));
-    if (isValid)
-      throw new RuntimeException("email em uso");
-
-    patient.updateEmail(email);
-    System.out.println("Email atualizado.");
   }
 
   public void delete() {
-    System.out.println("delete");
+    System.out.println("----- Patient Delete -----");
 
-    System.out.print("email: ");
-    String email = sc.nextLine();
+    System.out.print("Enter patient id: ");
+    int id = sc.nextInt();
+    sc.nextLine();
 
-    Patient patient = patientService.getAll().stream().filter(p -> p.getEmail().equalsIgnoreCase(email)).findFirst()
-        .orElse(null);
+    Patient patient;
 
-    if (patient == null) {
-      throw new RuntimeException("erro");
+    try {
+      patient = patientService.findById(id);
+    } catch (Exception e) {
+      System.out.println("Patient does not exist.");
+      pause();
+      return;
     }
 
     System.out.println(patient);
 
-    System.out.println("confirmação");
-
-    patientService.delete(patient.getId());
+    System.out.print("Delete this item? (y)yes (n)no: ");
+    char choose = sc.nextLine().toLowerCase().charAt(0);
+    if (choose != 'y') {
+      System.out.println("Action canceled.");
+      pause();
+      return;
+    }
+    try {
+      patientService.delete(patient.getId());
+      System.out.println("Patient successfully deleted.");
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+    pause();
   }
 
   private LocalDate readBirthday() {
@@ -122,5 +126,10 @@ public class PatientController {
         System.out.println("Invalid format. Use dd/MM/yyyy.");
       }
     }
+  }
+
+  private void pause() {
+    System.out.print("Press any key to continue...");
+    sc.nextLine();
   }
 }
