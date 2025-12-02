@@ -4,9 +4,11 @@ import java.time.LocalDate;
 
 import interfaces.HasEmail;
 import interfaces.HasId;
+import interfaces.HasName;
+import interfaces.IsUpdatable;
 import model.exception.DomainException;
 
-public abstract class Person implements HasEmail, HasId{
+public abstract class Person implements HasEmail, HasId, HasName, IsUpdatable {
 
   private static int count = 0;
 
