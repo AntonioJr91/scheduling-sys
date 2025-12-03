@@ -44,7 +44,7 @@ public abstract class BaseController<T extends HasId & HasName & HasEmail & IsUp
   }
 
   public void getByName() {
-    System.out.printf("----- %s List By Name -----", entityName);
+    System.out.printf("----- %s List By Name -----\n", entityName);
 
     System.out.print("Name: ");
     String name = sc.nextLine();
@@ -52,7 +52,7 @@ public abstract class BaseController<T extends HasId & HasName & HasEmail & IsUp
     List<T> entities = service.getAll().stream().filter(p -> p.getName().equalsIgnoreCase(name)).toList();
 
     if (entities.isEmpty()) {
-      System.out.println("Empty list");
+      System.err.println("Empty list");
       pause();
       return;
     }
@@ -71,7 +71,7 @@ public abstract class BaseController<T extends HasId & HasName & HasEmail & IsUp
         .orElse(null);
 
     if (entity == null) {
-      System.out.printf("Invalid %s.\n", entityName);
+      System.err.printf("Invalid %s.\n", entityName);
       pause();
       return;
     }
@@ -102,15 +102,24 @@ public abstract class BaseController<T extends HasId & HasName & HasEmail & IsUp
     System.out.printf("----- %s Delete -----\n", entityName);
 
     System.out.printf("Enter %s id: ", entityName);
-    int id = sc.nextInt();
-    sc.nextLine();
+    String inputId = sc.nextLine();
+
+    int id;
+
+    try {
+      id = Integer.parseInt(inputId);
+    } catch (NumberFormatException e) {
+      System.err.println("Invalid id. Provide a valid number.");
+      PauseUI.pause();
+      return;
+    }
 
     T entity;
 
     try {
       entity = service.findById(id);
     } catch (Exception e) {
-      System.out.printf("%s does not exist.\n", entityName);
+      System.err.printf("%s does not exist.\n", entityName);
       pause();
       return;
     }
@@ -118,7 +127,15 @@ public abstract class BaseController<T extends HasId & HasName & HasEmail & IsUp
     System.out.println(entity);
 
     System.out.print("Delete this item? (y)yes (n)no: ");
-    char choose = sc.nextLine().toLowerCase().charAt(0);
+    String inputChoose = sc.nextLine();
+
+    if (inputChoose.isEmpty()) {
+      System.out.println("Invalid input. Action canceled.");
+      pause();
+      return;
+    }
+    char choose = inputChoose.toLowerCase().charAt(0);
+    
     if (choose != 'y') {
       System.out.println("Action canceled.");
       pause();
@@ -128,7 +145,7 @@ public abstract class BaseController<T extends HasId & HasName & HasEmail & IsUp
       service.delete(entity.getId());
       System.out.printf("%s successfully deleted.", entityName);
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      System.err.println(e.getMessage());
     }
     pause();
   }
