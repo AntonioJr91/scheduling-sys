@@ -62,7 +62,12 @@ public abstract class Person implements HasEmail, HasId, HasName, IsUpdatable {
 
   @Override
   public String toString() {
-    return "Person [id=" + id + ", name=" + name + ", email=" + email + ", birthday=" + birthday + "]";
+    return "Person {\n" +
+        "  id=" + id + ",\n" +
+        "  name='" + name + "',\n" +
+        "  email='" + email + "',\n" +
+        "  birthday=" + birthday + "\n" +
+        '}';
   }
 
   @Override

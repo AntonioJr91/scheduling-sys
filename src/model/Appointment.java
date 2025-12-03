@@ -1,6 +1,7 @@
 package model;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import enums.AppointmentStatus;
 import interfaces.HasId;
@@ -87,9 +88,18 @@ public class Appointment implements HasId {
 
   @Override
   public String toString() {
-    return "Appointment [id=" + id + ", patient=" + patient + ", doctor=" + doctor + ", reason=" + reason
-        + ", startDateTime=" + startDateTime + ", endDateTime=" + endDateTime + ", appointmentStatus="
-        + appointmentStatus + ", consultationFee=" + consultationFee + "]";
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+    return "Appointment {\n" +
+        "  id=" + id + ",\n" +
+        "  patient=" + patient + ",\n" +
+        "  doctor=" + doctor + ",\n" +
+        "  reason='" + reason + "',\n" +
+        "  startDateTime=" + (startDateTime != null ? startDateTime.format(formatter) : null) + ",\n" +
+        "  endDateTime=" + (endDateTime != null ? endDateTime.format(formatter) : null) + ",\n" +
+        "  appointmentStatus=" + appointmentStatus + ",\n" +
+        "  consultationFee=" + consultationFee + "\n" +
+        '}';
   }
 
   @Override
