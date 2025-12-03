@@ -6,6 +6,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
+import enums.AppointmentStatus;
 import model.Appointment;
 import model.Doctor;
 import model.Patient;
@@ -96,6 +97,84 @@ public class AppointmentController {
       return;
     } catch (Exception e) {
       System.err.println(e.getMessage());
+    }
+    PauseUI.pause();
+  }
+
+  public void update() {
+    System.out.println("----- Appointment update -----\n");
+
+    System.out.print("Patient name: ");
+    String name = sc.nextLine();
+
+    if (name.isEmpty()) {
+      System.err.println("Name is required.");
+      PauseUI.pause();
+      return;
+    }
+
+    Appointment appointment = appointmentService.getAll().stream()
+        .filter(a -> a.getPatient().getName().equalsIgnoreCase(name))
+        .findFirst()
+        .orElse(null);
+
+    if (appointment == null) {
+      System.err.println("There is no appointment available for this patient. ");
+      PauseUI.pause();
+      return;
+    }
+
+    System.out.println(appointment);
+
+    for (int i = 0; i < AppointmentStatus.values().length; i++) {
+      System.out.printf("%d - %s\n", i + 1, AppointmentStatus.values()[i]);
+    }
+
+    System.out.print("Choose an option: ");
+    String input = sc.nextLine();
+
+    int selected;
+
+    try {
+      selected = Integer.parseInt(input);
+    } catch (Exception e) {
+      System.err.println(e.getMessage());
+      PauseUI.pause();
+      return;
+    }
+
+    if (selected < 1 || selected > AppointmentStatus.values().length) {
+      System.out.println("Invalid option.");
+      PauseUI.pause();
+      return;
+    }
+
+    switch (selected) {
+      case 1:
+        System.out.println("No change has been made.");
+        break;
+
+      case 2:
+        try {
+          appointment.completed();
+          System.out.println("Appointment has been updated to COMPLETED.");
+        } catch (Exception e) {
+          System.err.println(e.getMessage());
+        }
+        break;
+
+      case 3:
+        try {
+          appointment.cancel();
+          System.out.println("Appointment has been updated to CANCELED.");
+        } catch (Exception e) {
+          System.err.println(e.getMessage());
+        }
+        break;
+
+      default:
+        System.out.println("Invalid option.");
+        return;
     }
     PauseUI.pause();
   }
