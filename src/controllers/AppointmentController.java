@@ -106,18 +106,39 @@ public class AppointmentController {
     System.out.print("Appointment ID: ");
     int id = Integer.parseInt(sc.nextLine());
 
-    boolean exists = appointmentService.getAll().stream().anyMatch(a -> a.getId() == id);
+    Appointment appointment = appointmentService.getAll().stream().filter(a -> a.getId() == id).findFirst()
+        .orElse(null);
 
-    if (!exists) {
+    if (appointment == null) {
       System.err.println("Appointment not found.");
       PauseUI.pause();
       return;
     }
+
+    System.out.println(appointment);
+
+    System.out.print("Delete this item? (y)yes (n)no: ");
+    String inputChoose = sc.nextLine();
+
+    if (inputChoose.isEmpty()) {
+      System.out.println("Invalid input. Action canceled.");
+      PauseUI.pause();
+      return;
+    }
+
+    char choose = inputChoose.toLowerCase().charAt(0);
+
+    if (choose != 'y') {
+      System.out.println("Action canceled.");
+      PauseUI.pause();
+      return;
+    }
+
     try {
       appointmentService.delete(id);
       System.out.println("Appointment has been deleted.");
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      System.err.println(e.getMessage());
     }
     PauseUI.pause();
   }
