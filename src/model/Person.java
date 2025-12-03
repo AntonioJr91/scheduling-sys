@@ -1,6 +1,7 @@
 package model;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import interfaces.HasEmail;
 import interfaces.HasId;
@@ -62,11 +63,13 @@ public abstract class Person implements HasEmail, HasId, HasName, IsUpdatable {
 
   @Override
   public String toString() {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
     return "Person {\n" +
         "  id=" + id + ",\n" +
         "  name='" + name + "',\n" +
         "  email='" + email + "',\n" +
-        "  birthday=" + birthday + "\n" +
+        "  birthday=" + (birthday != null ? birthday.format(formatter) : null) + "\n" +
         '}';
   }
 

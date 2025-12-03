@@ -1,6 +1,7 @@
 package model;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import enums.Specialty;
 import model.exception.DomainException;
@@ -21,12 +22,15 @@ public final class Doctor extends Person {
 
   @Override
   public String toString() {
-    return "Doctor [id=" + getId()
-        + ", name=" + getName()
-        + ", email=" + getEmail()
-        + ", birthday=" + getBirthday()
-        + ", specialty=" + specialty
-        + "]";
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    return "Doctor {\n" +
+        "  id=" + getId() + ",\n" +
+        "  name='" + getName() + "',\n" +
+        "  email='" + getEmail() + "',\n" +
+        "  birthday=" + (getBirthday() != null ? getBirthday().format(formatter) : null) + ",\n" +
+        "  specialty=" + specialty + "\n" +
+        "}";
   }
 
   private void validateSpecialty(Specialty specialty) {
