@@ -27,18 +27,25 @@ public class DoctorController extends BaseController<Doctor> {
       System.out.printf("%d - %s\n", i + 1, Specialty.values()[i]);
     }
     System.out.print("Choose: ");
-    int specialtyIndex = sc.nextInt();
-    sc.nextLine();
+    String input = sc.nextLine();
 
-    Specialty specialty;
+    int specialtyIndex;
 
-    if (specialtyIndex < 1 || specialtyIndex > Specialty.values().length) {
-      System.out.println("Invalid specialty.");
+    try {
+      specialtyIndex = Integer.parseInt(input);
+    } catch (NumberFormatException e) {
+      System.err.println("Please enter a valid number.");
       pause();
       return;
     }
 
-    specialty = Specialty.values()[specialtyIndex -1];
+    if (specialtyIndex < 1 || specialtyIndex > Specialty.values().length) {
+      System.err.println("Invalid specialty.");
+      pause();
+      return;
+    }
+
+    Specialty specialty = Specialty.values()[specialtyIndex - 1];
 
     LocalDate birthday = readBirthday();
 
@@ -47,7 +54,7 @@ public class DoctorController extends BaseController<Doctor> {
       service.save(doctor);
       System.out.println("Doctor successfully created.");
     } catch (Exception ex) {
-      System.out.println(ex.getMessage());
+      System.err.println(ex.getMessage());
     }
     pause();
   }

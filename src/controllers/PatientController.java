@@ -12,7 +12,7 @@ public final class PatientController extends BaseController<Patient> {
   }
 
   public void add() {
-    System.out.println("----- New Patient ------");
+    System.out.printf("----- New %s ------\n", entityName);
 
     System.out.print("Name: ");
     String name = sc.nextLine();
@@ -27,7 +27,7 @@ public final class PatientController extends BaseController<Patient> {
       service.save(patient);
       System.out.println("Patient successfully created.");
     } catch (Exception ex) {
-      System.out.println(ex.getMessage());
+      System.err.println(ex.getMessage());
     }
     pause();
   }

@@ -30,10 +30,10 @@ public class AppointmentController {
   }
 
   public void getAll() {
-    System.out.println("----- Appointment List -----\n");
+    System.out.printf("----- Appointment List -----\n");
 
     if (appointmentService.getAll().isEmpty()) {
-      System.out.println("Empty list.");
+      System.err.println("Empty list.");
       PauseUI.pause();
       return;
     }
@@ -51,7 +51,7 @@ public class AppointmentController {
     List<Patient> patients = patientService.getAll().stream().filter(p -> p.getName().equalsIgnoreCase(name)).toList();
 
     if (patients.isEmpty()) {
-      System.out.println("No appointment available for this patient.");
+      System.err.println("No appointment available for this patient.");
       PauseUI.pause();
       return;
     }
@@ -76,18 +76,26 @@ public class AppointmentController {
     LocalDateTime endDateTime = readLocalDateTime("End DateTime");
 
     System.out.print("Consultation Fee: ");
-    Double consultationFee = sc.nextDouble();
+    String price = sc.nextLine();
+    Double consultationFee;
 
     Patient patient = findPatient(patientName);
     Doctor doctor = findDoctor(doctorName);
+    try {
+      consultationFee = Double.parseDouble(price);
+    } catch (NumberFormatException e) {
+      System.err.println("Invalid fee. Provide a valid number.");
+      PauseUI.pause();
+      return;
+    }
 
     try {
       Appointment appointment = new Appointment(patient, doctor, reason, startDateTime, endDateTime, consultationFee);
       appointmentService.save(appointment);
       System.out.println("Appointment successfully created.");
       return;
-    } catch (Exception ex) {
-      System.out.println(ex.getMessage());
+    } catch (Exception e) {
+      System.err.println(e.getMessage());
     }
     PauseUI.pause();
   }
@@ -96,13 +104,12 @@ public class AppointmentController {
     System.out.println("----- Delete Appointment -----\n");
 
     System.out.print("Appointment ID: ");
-    int id = sc.nextInt();
-    sc.nextLine();
+    int id = Integer.parseInt(sc.nextLine());
 
     boolean exists = appointmentService.getAll().stream().anyMatch(a -> a.getId() == id);
 
     if (!exists) {
-      System.out.println("Appointment not found.");
+      System.err.println("Appointment not found.");
       PauseUI.pause();
       return;
     }
@@ -123,7 +130,7 @@ public class AppointmentController {
         .orElse(null);
 
     if (patient == null) {
-      throw new RuntimeException("nao encontrado");
+      throw new RuntimeException("Patient not found.");
     }
     return patient;
   }
@@ -136,7 +143,7 @@ public class AppointmentController {
         .orElse(null);
 
     if (doctor == null) {
-      throw new RuntimeException("nao encontrado");
+      throw new RuntimeException("Doctor not found.");
     }
     return doctor;
   }
